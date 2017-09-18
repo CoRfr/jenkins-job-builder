@@ -191,6 +191,8 @@ def label_param(registry, xml_parent, data):
     :arg str name: the name of the parameter
     :arg str default: the default value of the parameter (optional)
     :arg str description: a description of the parameter (optional)
+    :arg str all-nodes-matching-label:
+    :arg str trigger-if-result:
 
     Example::
 
@@ -200,9 +202,16 @@ def label_param(registry, xml_parent, data):
             default: precise
             description: "The node on which to run the job"
     """
-    base_param(registry, xml_parent, data, True,
-               'org.jvnet.jenkins.plugins.nodelabelparameter.'
-               'LabelParameterDefinition')
+    pdef = base_param(registry, xml_parent, data, True,
+                      'org.jvnet.jenkins.plugins.nodelabelparameter.'
+                      'LabelParameterDefinition')
+    pdef.set("plugin", "nodelabelparameter@1.7.2")
+    XML.SubElement(pdef, 'allNodesMatchingLabel').text = str(
+        data.get('all-nodes-matching-label', False)).lower()
+    XML.SubElement(pdef, 'triggerIfResult').text = str(
+        data.get('trigger-if-result', "allCases"))
+    XML.SubElement(pdef, 'nodeEligibility',
+                             {'class': 'org.jvnet.jenkins.plugins.nodelabelparameter.node.AllNodeEligibility'})
 
 
 def node_param(registry, xml_parent, data):
